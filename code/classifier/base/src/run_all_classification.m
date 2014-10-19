@@ -3,8 +3,8 @@ function [out] = run_all_classification(varargin)
 [success, INTERN_cache_desc, varargin] = cache_enter(varargin);
 if (success) == 1, out = INTERN_cache_desc; return; end;
 
-data = varargin{1};
-cv_splits = varargin{2};
+data = load_cached_object(varargin{1});
+cv_splits = load_cached_object(varargin{2});
 feature_selector = varargin{3};
 classifier = varargin{4};
 balance = varargin{5};
