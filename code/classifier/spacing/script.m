@@ -4,8 +4,8 @@ global EXPERIMENTAL;
 EXPERIMENTAL = {};
 
 % data loading
-expt.cache = '';
-%expt.cache = '../cache'; % the location of the cache folder
+% expt.cache = '';
+expt.cache = '../../../../cache'; % the location of the cache folder
 expt.task_file = '../../../data/task_lex_view.xls'; % the location of the task file
 expt.eeg_file = '../../../data/eeg.xls'; % the location of the eeg file
 

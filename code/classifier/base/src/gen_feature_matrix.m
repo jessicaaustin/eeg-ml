@@ -97,10 +97,10 @@ epoch_idx = NaN(0, 1);
 for t = 1:length(data.epochs),
     epochs = data.epochs{t};
     for e = 1:length(epochs),
-        feats = epochs(e).features;
-        if isempty(feats)
+        if ~isfield(epochs(e), 'features') || isempty(epochs(e).features)
             continue;
         end
+        feats = epochs(e).features;
         epoch_M(end+1, :) = NaN(1, length(epoch_headers));
         epoch_idx(end+1, 1) = t;
         fns = fieldnames(feats);
