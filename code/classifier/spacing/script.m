@@ -16,7 +16,7 @@ expt.denoise = 1; % denoise by wavelet transform
 expt.bands = [1 4 8 12 30 101]; % the boundaries of the frequency band buckets.  e.g. 1-4 is a bucket, 4-8 is the next bucket
 expt.sampling_rate = 512; % sampling rate of the eeg device used to collect data
 expt.normalize = 1; % per-subject normalization (by zscore) across entire dataset prior to cross-validation and balancing
-expt.cond = 'cond'; % the name of the task file column that represents the dependent variable of the experiment
+expt.cond = 'accept'; % the name of the task file column that represents the dependent variable of the experiment
 
 % segmental features
 % each data segment is broken into sub-segments (epochs) and higher-order features are computed over these epochs 
