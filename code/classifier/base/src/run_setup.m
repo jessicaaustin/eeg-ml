@@ -5,7 +5,7 @@ INDEX = {};
 
 %% Setup
 % get path of base folder
-PATH = sprintf('%s/../../', mfilename('fullpath'));
+PATH = sprintf('%s/../', fileparts(mfilename('fullpath')));
 
 % load libs
 addpath(sprintf('%s/lib/cache', PATH));
