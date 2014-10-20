@@ -4,7 +4,7 @@ function [out] = gen_feature_matrix(varargin)
 if (success) == 1, out = INTERN_cache_desc; return; end;
 
 
-data = varargin{1};
+data = load_cached_object(varargin{1});
 cond_name = varargin{2};
 bands = varargin{3};
 features = varargin{4};
@@ -34,7 +34,12 @@ for c = 1:length(channels),
     end
 end
 
-H = [H 'SUBJECT' 'BLOCK' 'TASK' 'COND' 'INTERN_QUALITY'];
+H = [H 'LATENCY' 'AOA'];
+FEAT_RANGE = 1:length(H);
+
+H = [H 'SUBJECT' 'BLOCK' 'TASK' 'COND' 'INTERN_QUALITY' 'ACCEPT'];
+TASK_RANGE = (max(FEAT_RANGE)+1):(length(H));
+
 H = upper(H);
 list = H; enum = 1; enum_list;
 
@@ -61,6 +66,8 @@ for t = 1:length(data.start_time),
         M(t, COND) = find(id_dict.conds == cond(t));
     end
     M(t, INTERN_QUALITY) = data.INTERN_QUALITY{t};
+    M(t, LATENCY) = data.latency(t);
+    M(t, AOA) = data.aoa(t);
 end
 
 % Normalize all data per subject
@@ -68,17 +75,17 @@ if normalize,
     subjects = unique(M(:, SUBJECT));
     for s = 1:length(subjects),
         I_subject = M(:, SUBJECT) == s;
-        M_subject = M(I_subject, 1:SUBJECT - 1);
+        M_feat_data = M(I_subject, FEAT_RANGE);
         % compute the zscore ignoring nan
-        M(I_subject, 1:SUBJECT - 1) = (M_subject - repmat(nanmean(M_subject), size(M_subject, 1), 1)) ...
-            ./ repmat(nanstd(M_subject), size(M_subject, 1), 1);
+        M(I_subject, FEAT_RANGE) = (M_feat_data - repmat(nanmean(M_feat_data), size(M_feat_data, 1), 1)) ...
+            ./ repmat(nanstd(M_feat_data), size(M_feat_data, 1), 1);
     end
 end
 
-data.feat_H = H(1:SUBJECT  - 1);
-data.feat_M = M(:, 1:SUBJECT - 1);
-data.task_H = H(SUBJECT:end);
-data.task_M = M(:, SUBJECT:end);
+data.feat_H = H(FEAT_RANGE);
+data.feat_M = M(:, FEAT_RANGE);
+data.task_H = H(TASK_RANGE);
+data.task_M = M(:, TASK_RANGE);
 
 %%%% generate epoch level features %%%%
 
