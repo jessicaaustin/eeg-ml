@@ -46,7 +46,7 @@ a31 = 0.1;  % sunny to rainy
 a32 = 0.4;  % sunny to cloudy
 A = [a11 a12 a13;
      a21 a22 a23;
-     a31 a32 a33];
+     a31 a32 a33]
 
 % each row should sum to one
 assert(all((sum(A,2)-1)<eps));
@@ -55,7 +55,7 @@ assert(all((sum(A,2)-1)<eps));
    % low  medium  high pressure reading
 b = [.7    .2      .1;  % rainy
      .3    .5      .2;  % cloudy
-     .1    .4      .5]; % sunny
+     .1    .4      .5] % sunny
 
 %% Generate observations
 

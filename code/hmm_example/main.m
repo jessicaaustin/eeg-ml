@@ -4,7 +4,7 @@ close all;
 
 %% Generate observations and plot results
 
-n = 10000;
+n = 1000;
 [x, S, mx, mS] = generateObservations(n);
 
 colors = {'co', 'bo', 'ko'};
@@ -38,3 +38,17 @@ end
     
 %% Estimate parameters of HMM
     
+% Estimate parameters with just the sequence as input, using
+% the Baum-Welch algorithm
+A_guess = [.50 .25 .25;
+           .25 .50 .25;
+           .25 .25 .50];
+b_guess = [.8 .1 .1;
+           .1 .8 .1;
+           .1 .1 .8];
+[A_est_BW, b_est_BW] = hmmtrain(x, A_guess, b_guess)
+
+% Estimate parameters using training data (with a known sequence),
+% using MLE
+[A_est_MLE, b_est_MLE] = hmmestimate(x, S)
+
