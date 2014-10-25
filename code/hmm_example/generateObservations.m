@@ -1,4 +1,4 @@
-function [observations, latentStates, mo, ms] = generateObservations(n)
+function [observations, hiddenStates, mx, mS] = generateObservations(n)
 % Generate n observations, based on a latent model
 
 %% Internal Model
@@ -30,9 +30,9 @@ function [observations, latentStates, mo, ms] = generateObservations(n)
 
 
 % Initial state distributions
-p_init = [0.1;  % rainy
-          0.5;  % cloudy
-          0.4]; % sunny
+p = [0.1;  % rainy
+     0.5;  % cloudy
+     0.4]  % sunny
 
 % State transition probabilities
 a11 = 0.3;  % rainy to rainy
@@ -61,7 +61,7 @@ b = [.7    .2      .1;  % rainy
 
 % generate states
 states = zeros(n,1);
-states(1) = discreteSample(p_init,1);
+states(1) = discreteSample(p,1);
 for i=1:n-1
     current_state = states(i);
     state_transition_probabilities = A(current_state,:);
@@ -80,11 +80,16 @@ end
 % Of course, this is a latent variable so we couldn't directly 
 % know it. However, return this variable for debugging purposes.
 
-latentStates = states;
+hiddenStates = states;
 
-%% MATLAB hmmgenerate implementation
-% for comparison purposes
+%% Sample using the HMM toolbox implementation
+% for comparison purposes. note that there is no way to specific the
+% initial state (you can specify initial state distribution though), so
+% this will necessarily deviate from the above result (x and S)
+[mx, mS] = sample_dhmm(p, A, b, 1, n);  
 
-[mo,ms] = hmmgenerate(n,A,b);
+%% Sample using the MATLAB implementation
+% [mx,mS] = hmmgenerate(n,A,b);
+
 
 end

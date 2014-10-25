@@ -2,6 +2,8 @@
 clear;
 close all;
 
+addpath('../HMM_mat');
+
 %% Generate observations and plot results
 
 n = 1000;
@@ -46,9 +48,16 @@ A_guess = [.50 .25 .25;
 b_guess = [.8 .1 .1;
            .1 .8 .1;
            .1 .1 .8];
-[A_est_BW, b_est_BW] = hmmtrain(x, A_guess, b_guess)
+p_guess = [1/3 1/3 1/3];
+
+fprintf('Estimating parameters using EM (Baum Welch) MATLAB implementation:\n');
+[A_est_EM_matlab, b_est_EM_matlab] = hmmtrain(x, A_guess, b_guess)
+
+fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox implementation:\n');
+[~, p_est, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x, p_guess, A_guess, b_guess, 'max_iter', 50)
 
 % Estimate parameters using training data (with a known sequence),
 % using MLE
+fprintf('Estimating parameters using MLE and training data with known states, MATLAB implementation:\n');
 [A_est_MLE, b_est_MLE] = hmmestimate(x, S)
 
