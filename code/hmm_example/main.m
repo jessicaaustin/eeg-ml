@@ -1,30 +1,40 @@
 
+clear;
+close all;
+
 %% Generate observations and plot results
 
-n = 100;
-x = generateObservations(n);
+n = 10000;
+[x, S, mx, mS] = generateObservations(n);
 
-colors = {'go', 'bo', 'ro'};
+colors = {'co', 'bo', 'ko'};
+mcolors = {'cx', 'bx', 'kx'};
     
 figure; hold on
-    plot(1, sum(x==1), colors{1});
-    plot(2, sum(x==2), colors{2});
-    plot(3, sum(x==3), colors{3});
-    legend('rainy', 'cloudy', 'sunny');
+    plot(1, mean(x(S==1)), colors{1});
+    plot(2, mean(x(S==2)), colors{2});
+    plot(3, mean(x(S==3)), colors{3});
+    plot(1, mean(mx(mS==1)), mcolors{1});
+    plot(2, mean(mx(mS==2)), mcolors{2});
+    plot(3, mean(mx(mS==3)), mcolors{3});
     xlabel('state');
-    ylabel('count');
+    ylabel('mean pressure reading');
     xlim([0.5 3.5]);
-    ylim([0 n]);
+    ylim(ylim.*[.5 1.1])
     grid on;
-    title('counts for each state');
+    title('mean pressure reading for each state');
     
-figure; hold on;
-    for i=1:n
-        plot(i, 1, colors{x(i)});
-    end
-    xlabel('time');
-    ylabel('state');
-    title(sprintf('states over time\nblue: cloudy, green: rainy, red: sunny'));
+if n<=100    
+    figure; hold on;
+        for i=1:n
+            plot(i, 1, colors{x(i)});
+            plot(i, 1.1, mcolors{mx(i)});
+            ylim([.5 1.5]);
+        end
+        xlabel('time');
+        ylabel('reading');
+        title(sprintf('readings over time'));  
+end
     
 %% Estimate parameters of HMM
     
