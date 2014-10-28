@@ -2,7 +2,7 @@
 clear;
 close all;
 
-addpath('../HMM_mat');
+addpath('../../HMM_mat');
 
 %% Generate observations and plot results
 
