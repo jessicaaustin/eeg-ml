@@ -9,17 +9,17 @@ addpath('../../Barber_ML_ext');
 %% Generate observations and plot results
 
 n = 10;
-x = [];
+x = {};
 
 xcolors = {'rx', 'gx'};
 scolors = {'yo', 'ko'};
     
-figure; hold on;
+% figure; hold on;
 
 for w=1:100
     
     [x_w, S_w, A_true, b_true, p_true] = generateObservations(n);
-    x(:,w) = x_w;
+    x{w} = x_w';
     
     for i=1:n
         plot(i, 1+.5*w, scolors{S_w(i)}, 'LineWidth',3);
@@ -35,25 +35,23 @@ title(sprintf('state and observations over time'));
     
 % Estimate parameters with just the sequence as input, using
 % the Baum-Welch algorithm
-A_guess =[.5  .5
+A0 =[.5  .5
            0   1];
-b_guess = [.5  .5
+b0 = [.5  .5
            .2  .8];
-p_guess = [0.9; 
+p0 = [0.9; 
            0.1];
 
 fprintf('Estimating parameters using EM (Baum Welch) MATLAB implementation:\n');
-[A_est_EM_matlab, b_est_EM_matlab] = hmmtrain(x', A_guess, b_guess);
+[A_est_EM_matlab, b_est_EM_matlab] = hmmtrain(x, A0, b0);
 
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox implementation:\n');
-[~, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x', p_guess, A_guess, b_guess, 'max_iter', 50);
+[LL, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x, p0, A0, b0, 50, 1E-8);
 
 fprintf('Estimating parameters using EM (Baum Welch) Barber implementation:\n');
-opts.maxit = 30;
-opts.plotprogress = 1;
-x_cell = mat2cell(x,size(x,1),ones(1,size(x,2)));
-figure;
-[A_est_EM_Barber, p_est_EM_Barber, b_est_EM_Barber, ~] = HMMem(x_cell, size(A_guess,2), size(b_guess,2), opts);
+opts.maxit = 50;
+opts.plotprogress = 0; % figure;
+[A_est_EM_Barber, p_est_EM_Barber, b_est_EM_Barber, ~] = HMMem(x, size(A0,2), size(b0,2), opts);
 
 %% Plot results
 
@@ -80,7 +78,7 @@ subplot(2,2,4); imagesc(b_est_EM_Barber); title('learned emission (Barber)');
 Methods = {'Actual Value', 'MATLAB hmmtrain', 'HMM Toolbox', 'Barber'};
 
 l0 = [p_true(2); 
-      0;
+      nan;
       p_est_EM_HMMt(2);
       p_est_EM_Barber(2)];
 p_learn =  [A_true(1,2); 
