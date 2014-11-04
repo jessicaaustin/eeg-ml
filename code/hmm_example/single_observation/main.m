@@ -3,6 +3,7 @@ clear;
 close all;
 
 addpath('../../HMM_mat');
+addpath('../../Barber_ML');
 
 %% Generate observations and plot results
 
@@ -50,14 +51,25 @@ b_guess = [.8 .1 .1;
            .1 .1 .8];
 p_guess = [1/3 1/3 1/3];
 
+
 fprintf('Estimating parameters using EM (Baum Welch) MATLAB implementation:\n');
 [A_est_EM_matlab, b_est_EM_matlab] = hmmtrain(x, A_guess, b_guess)
 
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox implementation:\n');
-[~, p_est, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x, p_guess, A_guess, b_guess, 'max_iter', 50)
+[~, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x, p_guess, A_guess, b_guess, 'max_iter', 50)
+
+fprintf('Estimating parameters using EM (Baum Welch) Barber implementation:\n');
+opts.maxit = 100;
+opts.plotprogress = 1;
+x_cell{1} = x;
+[A_est_EM_Barber, p_est_EM_Barber, b_est_EM_Barber, ~] = HMMem(x_cell, 3, 3, opts)
+
+fprintf('Estimating parameters using EM (Baum Welch) Barber implementation with initial guess:\n');
+[A_est_EM_BarberWithGuess, p_est_EM_BarberWithGuess, b_est_EM_BarberWithGuess, ~] = HMMem_withInitGuess(x_cell, 3, 3, A_guess, b_guess, p_guess', opts)
 
 % Estimate parameters using training data (with a known sequence),
 % using MLE
+
 fprintf('Estimating parameters using MLE and training data with known states, MATLAB implementation:\n');
 [A_est_MLE, b_est_MLE] = hmmestimate(x, S)
 
