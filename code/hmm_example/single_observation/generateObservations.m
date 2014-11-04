@@ -1,4 +1,4 @@
-function [observations, hiddenStates, mx, mS] = generateObservations(n)
+function [observations, hiddenStates, mx, mS, A, b, p] = generateObservations(n)
 % Generate n observations, based on a latent model
 
 %% Internal Model
