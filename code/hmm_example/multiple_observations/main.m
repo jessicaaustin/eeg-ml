@@ -2,7 +2,8 @@
 clear;
 close all;
 
-addpath('../../HMM_mat');
+code_root = ('../../');
+addpath([code_root, 'common']);
 
 %% Generate observations and plot results
 

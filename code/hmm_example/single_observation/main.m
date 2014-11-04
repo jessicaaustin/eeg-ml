@@ -2,9 +2,11 @@
 clear;
 close all;
 
-addpath('../../HMM_mat');
-addpath('../../Barber_ML');
-addpath('../../Barber_ML_ext');
+code_root = ('../../');
+addpath([code_root, 'common']);
+addpath([code_root, 'HMM_mat']);
+addpath([code_root, 'Barber_ML']);
+addpath([code_root, 'Barber_ML_ext']);
 
 %% Generate observations and plot results
 
