@@ -30,7 +30,7 @@ a12 = 0.7;  % unknown to known   (they learned something!)
 a22 = 1.0;  % known to known   (we assume forget_rate=0)
 a21 = 0.0;  % known to unknown (we assume forget_rate=0)
 A = [a11 a12;
-     a21 a22]
+     a21 a22];
 
 % each row should sum to one
 assert(all((sum(A,2)-1)<eps));
@@ -38,7 +38,7 @@ assert(all((sum(A,2)-1)<eps));
 % observation probability distribution for each state
    % reject  accept   <--ASR result
 b = [.6       .4;  % unknown
-     .1       .9]  % known
+     .1       .9];  % known
 
 %% Generate observations
 
