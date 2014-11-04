@@ -21,24 +21,26 @@ function [observations, hiddenStates, A, b, p] = generateObservations(n)
 
 
 % Initial state distributions
-p = [0.8;  % unknown
-     0.2];  % known
+l0 = 0.2;
+p = [1-l0;  % unknown
+     l0];  % known
 
 % State transition probabilities
-a11 = 0.3;  % unknown to unknown (they didn't learn anything this step)
-a12 = 0.7;  % unknown to known   (they learned something!)
-a22 = 1.0;  % known to known   (we assume forget_rate=0)
-a21 = 0.0;  % known to unknown (we assume forget_rate=0)
-A = [a11 a12;
-     a21 a22];
+p_learn = 0.7;
+p_forget = 0.05;
+A = [1-p_learn   p_learn;
+     p_forget    1-p_forget];
 
 % each row should sum to one
 assert(all((sum(A,2)-1)<eps));
 
 % observation probability distribution for each state
-   % reject  accept   <--ASR result
-b = [.6       .4;  % unknown
-     .1       .9];  % known
+p_guess = .4;
+p_slip = .2;
+   % incorrect  correct  <-- observed result
+b = [1-p_guess  p_guess;   % unknown
+     p_slip    1-p_slip];  % known
+                          %   ^ knowledge state 
 
 %% Generate observations
 
