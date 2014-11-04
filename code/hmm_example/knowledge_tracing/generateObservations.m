@@ -10,13 +10,9 @@ function [observations, hiddenStates, A, b, p] = generateObservations(n)
 % the state transition probabilities are given in A.
 %
 % Of course, we can't observe these states directly, but instead
-% have to rely on observed data. Currently, we rely on the barometric
-% pressure to get an idea of the current weather.
-% The barometer has 3 possible readings: low, medium, and high pressure.
-% Generally, lower pressure means rain, medium pressure means
-% cloudy, and high pressure means sun.
-% The probabilities of low, medium, and high readings for each
-% weather state is given by the matrix b.
+% have to rely on observed data. Currently, we rely on the ASR to give
+% us an idea of whether or not the student got the word correct. For
+% each task, the ASR will return either "incorrect" or "correct". 
 %
 
 
