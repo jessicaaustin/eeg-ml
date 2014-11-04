@@ -1,4 +1,4 @@
-function [phghm,ph1,pvgh,loglikelihood]=HMMem_withInitGuess(v,H,V,A0,b0,p0,opts)
+function [phghm,ph1,pvgh,loglikelihood]=HMMem_withInitGuess(v,A0,b0,p0,opts)
 %HMMEM EM algorithm for HMM
 % [phghm,ph1,pvgh,loglikelihood]=HMMem(v,H,V,opts)
 %
@@ -18,6 +18,8 @@ N = length(v); % number of sequences
 phghm=A0; % transition distribution p(h(t)|h(t-1))
 pvgh=b0; % emission distribution p(v(t)|h(t))
 ph1=p0; % initial p(h)
+H = size(A0,2);
+V = size(b0,2);
 
 for emloop=1:opts.maxit
 	A=zeros(H,H); a=zeros(H,1); B=zeros(V,H);

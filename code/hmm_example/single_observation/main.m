@@ -70,7 +70,7 @@ figure;
 
 fprintf('Estimating parameters using EM (Baum Welch) Barber implementation with initial guess:\n');
 figure;
-[A_est_EM_BarberWithGuess, p_est_EM_BarberWithGuess, b_est_EM_BarberWithGuess, ~] = HMMem_withInitGuess(x_cell, 3, 3, A_guess, b_guess, p_guess', opts)
+[A_est_EM_BarberWithGuess, p_est_EM_BarberWithGuess, b_est_EM_BarberWithGuess, ~] = HMMem_withInitGuess(x_cell, A_guess, b_guess, p_guess', opts)
 
 % Estimate parameters using training data (with a known sequence),
 % using MLE
