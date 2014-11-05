@@ -14,7 +14,7 @@ x = {};
 xcolors = {'rx', 'gx'};
 scolors = {'yo', 'ko'};
     
-% figure; hold on;
+figure; hold on;
 
 for w=1:100  % number of words they saw
     
