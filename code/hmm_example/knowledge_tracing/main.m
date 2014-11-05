@@ -8,7 +8,7 @@ addpath('../../Barber_ML_ext');
 
 %% Generate observations and plot results
 
-n = 10;
+n = 10;  % number of times they saw the same word
 x = {};
 
 xcolors = {'rx', 'gx'};
@@ -16,7 +16,7 @@ scolors = {'yo', 'ko'};
     
 % figure; hold on;
 
-for w=1:100
+for w=1:100  % number of words they saw
     
     [x_w, S_w, A_true, b_true, p_true] = generateObservations(n);
     x{w} = x_w';
