@@ -2,34 +2,15 @@
 clear;
 close all;
 
+addpath('../../common');
 addpath('../../HMM_mat');
 addpath('../../HMM_mat_ext');
 
 %% Generate observations and plot results
 
 n = 10;
-x = {};
+[ASRobservations, EEGobservations, attentionStates, knowledgeStates, p_true,A_true,b_true] = generateObservations(n);
 
-xcolors = {'rx', 'gx'};
-scolors = {'yo', 'ko'};
-    
-figure; hold on;
-
-for w=1:100
-    
-    [x_w, S_w, A_true, b_true, p_true] = generateObservations(n);
-    x{w} = x_w';
-    
-    for i=1:n
-        plot(i, 1+.5*w, scolors{S_w(i)}, 'LineWidth',3);
-        plot(i, 1+.5*w, xcolors{x_w(i)}, 'LineWidth',2);
-    end
-end
-
-xlabel('time');
-ylabel('state (o), observation (x)');
-title(sprintf('state and observations over time'));  
-    
 %% Estimate parameters of HMM
     
 % Estimate parameters with just the sequence as input, using
@@ -41,6 +22,7 @@ b0 = [.5  .5
 p0 = [0.9; 
            0.1];
 
+x = ASRobservations;
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox ext implementation:\n');
 [LL, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm_iohmm(x, p0, A0, b0, 50, 1E-8);
 
