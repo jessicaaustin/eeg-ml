@@ -139,7 +139,7 @@ for ex=1:numex
   T = length(obs);
   olikseq = mk_dhmm_obs_lik(obs, obsmat);
   if isempty(act)
-    [gamma, xi, current_ll] = forwards_backwards(prior, transmat, olikseq);
+    [gamma, xi, current_ll] = forwards_backwards_iohmm(prior, transmat, olikseq);
   else
     [gamma, xi, current_ll] = forwards_backwards_pomdp(prior, transmat, olikseq, act{ex});
   end

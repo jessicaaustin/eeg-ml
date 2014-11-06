@@ -24,7 +24,10 @@ alpha = zeros(Q,T);
 gamma = zeros(Q,T);
 xi = zeros(Q,Q,T-1);
 
-t = 1;
+% FORWARD (aka Filtering) -- find p(ht|v1:t)   [Barber §23.2.2]
+% α(ht) = p(ht, v1:t)
+
+t = 1;  % α(h1) = p(h1, v1) = p(v1|h1)p(h1)     [Barber 23.2.10]
 alpha(:,1) = prior(:) .* obslik(:,t);
 [alpha(:,t), scale(t)] = normalise(alpha(:,t));
 transmat2 = transmat';
@@ -33,7 +36,7 @@ for t=2:T
     A = repmat(alpha(:,t-1), [1 Q]);
     m = max(transmat .* A, [], 1);
     [alpha(:,t),scale(t)] = normalise(m(:) .* obslik(:,t));
-  else
+  else  %                              p(ht|ht−1)    α(ht−1)          p(vt|ht)    [Barber 23.2.9]
     [alpha(:,t),scale(t)] = normalise((transmat2 * alpha(:,t-1)) .* obslik(:,t));
   end
   if (scale(t) == 0) | isnan(scale(t)) | ~isreal(scale(t)) 
@@ -47,20 +50,24 @@ else
   loglik = sum(log(scale));
 end
 
+% BACKWARD (aka Parallel smoothing) -- find p(ht|v1:T)  [Barber 23.2.3]
+% β(ht) ≡ p(vt+1:T |ht)
+
 beta = zeros(Q,T); % beta(i,t)  = Pr(O(t+1:T) | X(t)=i)
 gamma = zeros(Q,T);
 beta(:,T) = ones(Q,1);
 gamma(:,T) = normalise(alpha(:,T) .* beta(:,T));
 t=T;
 for t=T-1:-1:1
+  %      β(ht+1)     p(vt+1|ht+1)     [Barber 23.2.18]
   b = beta(:,t+1) .* obslik(:,t+1); 
   if maximize
     B = repmat(b(:)', Q, 1);
     beta(:,t) = normalise(max(transmat .* B, [], 2));
-  else
+  else               %    p(ht+1|ht)                    [Barber 23.2.18]
     beta(:,t) = normalise((transmat * b));
   end
-  gamma(:,t) = normalise(alpha(:,t) .* beta(:,t));
+  gamma(:,t) = normalise(alpha(:,t) .* beta(:,t));   % [Barber 23.2.19]
   xi(:,:,t) = normalise((transmat .* (alpha(:,t) * b')));
 end
 
