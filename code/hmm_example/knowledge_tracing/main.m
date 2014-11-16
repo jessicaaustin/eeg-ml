@@ -2,6 +2,7 @@
 clear;
 close all;
 
+addpath('../../common');
 addpath('../../HMM_mat');
 addpath('../../Barber_ML');
 addpath('../../Barber_ML_ext');

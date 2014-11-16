@@ -24,8 +24,9 @@ p = [1-l0;  % unknown
 % State transition probabilities
 p_learn = 0.7;
 p_forget = 0.05;
-A = [1-p_learn   p_learn;
-     p_forget    1-p_forget];
+    % unknown    known
+A = [1-p_learn   p_learn;   %unknown
+     p_forget    1-p_forget];  %known
 
 % each row should sum to one
 assert(all((sum(A,2)-1)<eps));
