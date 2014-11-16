@@ -26,6 +26,19 @@ for si = 1:length(subjectIDs)
     allResultsForSubject_fluent = data.fluent(idx); 
 
     uniqueWords = unique(allWordsForSubject);
+    
+    % remove 'counts' at the end of some words
+    uniqueWordsCleaned = {};
+    for wi=1:length(uniqueWords)
+        w = uniqueWords{wi};
+        a = regexp(w,'\(\d+\)');
+        if ~isempty(a)
+            w = w(1:a-1);
+        end
+        uniqueWordsCleaned{wi} = w;
+    end
+    uniqueWords = unique(uniqueWordsCleaned);
+    
     numUniqueWords = length(uniqueWords);
 
     words = cell(numUniqueWords,1);
@@ -48,6 +61,8 @@ for si = 1:length(subjectIDs)
     end
 
     words(seqsIdx:end) = [];
+    sequences_accept(seqsIdx:end) = [];
+    sequences_latency(seqsIdx:end) = [];
     sequences_fluent(seqsIdx:end) = [];
     
     dataForSubject.subjectID = subjectID;

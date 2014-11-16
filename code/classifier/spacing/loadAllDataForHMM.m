@@ -1,28 +1,25 @@
 
+
 clear;
+tic
+[~, hmmData_2011_2012] = prepareData( '../../../data-lg/eeg_lex_view_2011_2012_cols.xls' );
+save('hmmData_2011_2012');
+toc; 
 
-% load the data again
-if false
+clear;
+tic
+[~, hmmData_2012_2013] = prepareData( '../../../data-lg/eeg_lex_view_2012_2013_cols.xls' );
+save('hmmData_2012_2013');
+toc; 
 
-    clear;
-    tic
-    [~, hmmData_2011_2012] = prepareData( '../../../data-lg/eeg_lex_view_2011_2012_cols.xls' );
-    save('hmmData_2011_2012');
-    toc; 
+clear;
+tic
+[~, hmmData_2013_2014] = prepareData( '../../../data-lg/eeg_lex_view_2013_2014_cols.xls' );
+save('hmmData_2013_2014');
+toc
 
-    clear;
-    tic
-    [~, hmmData_2012_2013] = prepareData( '../../../data-lg/eeg_lex_view_2012_2013_cols.xls' );
-    save('hmmData_2012_2013');
-    toc; 
+load gong.mat;soundsc(y);
 
-    clear;
-    tic
-    [~, hmmData_2013_2014] = prepareData( '../../../data-lg/eeg_lex_view_2013_2014_cols.xls' );
-    save('hmmData_2013_2014');
-    toc
-
-end
 
 % % group students across data sets
 % load('hmmData_2011_2012');
