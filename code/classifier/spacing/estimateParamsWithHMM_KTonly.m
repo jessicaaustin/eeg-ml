@@ -25,3 +25,17 @@ p_learn =  A_est_EM_HMMt(1,2)
 p_forget = A_est_EM_HMMt(2,1)
 p_guess = b_est_EM_HMMt(1,2)
 p_slip = b_est_EM_HMMt(2,1)
+
+
+% testing ideas:
+% take a student
+% use leave-one-out across sequences
+% during each test sequence:
+%   1. use l0 to estimate 1st state, and g,s to estimate 
+%      observation based on that state
+%   2. compare to actual observation
+%   3. take actual observation. use l,f to estimate next state.
+%      use g,s to estimate observation
+%   4. compare to actual observation
+%   5. repeat 3-4 for remaining elements in sequence
+  
