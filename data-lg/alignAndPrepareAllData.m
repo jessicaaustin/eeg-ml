@@ -4,6 +4,7 @@ clear;
 % % load subjects
 subjects=tdfread('subjectToUserId.xls');
 subjects.subjectid=cellstr(subjects.subjectid);
+save('subjects', 'subjects');
 
 for sid=1:length(subjects.subjectid)
     
