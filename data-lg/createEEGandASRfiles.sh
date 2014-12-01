@@ -32,5 +32,5 @@ do
     then
         head -n1 $EEG_FILE |  cut -f 2,3,4,8,9,10,11-18,21 > $eegfile
     fi
-    grep -P "\t${userid}\t" $EEG_FILE | cut -f 2,3,4,8,9,10,11-18,21 >> $eegfile
+    grep -P "^(\w|-)+\t(\w|-)+\t${userid}\t" $EEG_FILE | cut -f 2,3,4,8,9,10,11-18,21 >> $eegfile
 done 
