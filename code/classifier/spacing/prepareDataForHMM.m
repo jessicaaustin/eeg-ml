@@ -28,7 +28,19 @@ for sid=subjectids'
 
         if sum(wordIdx)>MIN_SEQUENCE_LENGTH
             words{seqsIdx} = word;
-            accept{seqsIdx} = data.fluent(wordIdx);
+            asrResult = data.fluent(wordIdx);
+            % ensure that asrResult vals are in (1,2)  
+            if length(unique(asrResult))==3
+%                 fprintf('fluent contains both 0 and 2!!\n');
+                continue;
+            end
+            if isempty(find(asrResult==2))
+                asrResult = double(asrResult) + ones(size(asrResult));
+            else
+                a=1;
+            end
+            accept{seqsIdx} = asrResult;
+            
             timeelapsed{seqsIdx} = data.timeelapsedms(wordIdx);
             attention{seqsIdx} = data.attention(wordIdx);
             meditation{seqsIdx} = data.meditation(wordIdx);
