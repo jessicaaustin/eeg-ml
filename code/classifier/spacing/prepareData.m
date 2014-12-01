@@ -1,5 +1,22 @@
 function [data,hmmData] = prepareData( task_file )
 
+
+%% WARNING: this file is OLD!! Use prepareDataforHMM instead
+
+
+
+%% WARNING: this file is OLD!! Use prepareDataforHMM instead
+
+
+
+%% WARNING: this file is OLD!! Use prepareDataforHMM instead
+
+
+
+%% WARNING: this file is OLD!! Use prepareDataforHMM instead
+
+
+
 %% load input files
 
 data=tdfread(task_file);
