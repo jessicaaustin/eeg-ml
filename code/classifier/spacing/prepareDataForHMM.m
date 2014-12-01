@@ -30,7 +30,8 @@ for sid=subjectids'
             words{seqsIdx} = word;
             asrResult = data.fluent(wordIdx);
             % ensure that asrResult vals are in (1,2)  
-            if length(unique(asrResult))==3
+            if length(unique(asrResult))==3 || ...
+                    (any(asrResult==0) && any(asrResult==2))
 %                 fprintf('fluent contains both 0 and 2!!\n');
                 continue;
             end
