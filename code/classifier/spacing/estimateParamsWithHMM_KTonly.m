@@ -76,26 +76,31 @@ for i=1:N
 end
 
 figure; hold on;
+    plot(repmat(p0(2), N, 1), 'k:');
     plot(all_l0,'ro')
     errorbar(round(N/2), mean(all_l0), std(all_l0));
     title('l0')
     ylim([0 1]);
 figure; hold on;
+    plot(repmat(A0(1,2), N, 1), 'k:');
     plot(all_p_learn,'ro')
     errorbar(round(N/2), mean(all_p_learn), std(all_p_learn));
     title('p\_learn')
     ylim([0 1]);
 figure; hold on;
+    plot(repmat(A0(2,1), N, 1), 'k:');
     plot(all_p_forget,'ro')
     errorbar(round(N/2), mean(all_p_forget), std(all_p_forget));
     title('p\_forget')
     ylim([0 1]);
 figure; hold on;
+    plot(repmat(b0(1,2), N, 1), 'k:');
     plot(all_p_guess,'ro')
     errorbar(round(N/2), mean(all_p_guess), std(all_p_guess));
     title('p\_guess')
     ylim([0 1]);
 figure; hold on;
+    plot(repmat(b0(2,1), N, 1), 'k:');
     plot(all_p_slip,'ro')
     errorbar(round(N/2), mean(all_p_slip), std(all_p_slip));
     title('p\_slip')
