@@ -134,10 +134,10 @@ exp_num_emit = dirichlet*ones(S,O);
 loglik = 0;
 estimated_trans = 0;
 
-for ex=1:numex
-  obs = data{ex};
-  T = length(obs);
-  olikseq = mk_dhmm_obs_lik(obs, obsmat);
+for ex=1:numex  % for each sequence
+  obs = data{ex};  % v -- the observations for this sequence (1xn)
+  T = length(obs);  % T -- the length of the sequence
+  olikseq = mk_dhmm_obs_lik(obs, obsmat);  % b_j -- the observation likelihoods, (Mxn)
   if isempty(act)
     [gamma, xi, current_ll] = forwards_backwards(prior, transmat, olikseq);
   else
@@ -154,13 +154,13 @@ for ex=1:numex
       A = length(transmat);
       for a=1:A
 	ndx = find(act{ex}(2:end)==a);
-	if ~isempty(ndx)
+	if ~isempty(ndx)   % eqn (40b)
 	  exp_num_trans{a} = exp_num_trans{a} + sum(xi(:,:,ndx), 3);
 	end
       end
     end
   end
-  
+              % eqn (40a)
   exp_num_visits1 = exp_num_visits1 + gamma(:,1);
   
   if T < O
@@ -171,7 +171,7 @@ for ex=1:numex
   else
     for o=1:O
       ndx = find(obs==o);
-      if ~isempty(ndx)
+      if ~isempty(ndx)  % eqn (40c)
 	exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
       end
     end

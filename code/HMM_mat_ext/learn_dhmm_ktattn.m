@@ -1,5 +1,5 @@
-function [LL, prior, transmat, obsmat, gamma] = learn_dhmm_iohmm(data, prior, transmat, obsmat, max_iter, thresh, ...
-                          verbose, act, adj_prior, adj_trans, adj_obs, dirichlet)
+function [LL, prior, transmat, obsmat, gamma] = learn_dhmm_ktattn(data, prior, transmat, obsmat, max_iter, thresh, ...
+						  verbose, act, adj_prior, adj_trans, adj_obs, dirichlet)
 % LEARN_HMM Find the ML parameters of an HMM with discrete outputs using EM.
 %
 % [LL, PRIOR, TRANSMAT, OBSMAT] = LEARN_HMM(DATA, PRIOR0, TRANSMAT0, OBSMAT0) 
@@ -90,7 +90,7 @@ while (num_iter <= max_iter) & ~converged
       transmat = mk_stochastic(exp_num_trans);
     else
       for a=1:A
-    transmat{a} = mk_stochastic(exp_num_trans{a});
+	transmat{a} = mk_stochastic(exp_num_trans{a});
       end
     end
   end
@@ -134,12 +134,12 @@ exp_num_emit = dirichlet*ones(S,O);
 loglik = 0;
 estimated_trans = 0;
 
-for ex=1:numex
-  obs = data{ex};
-  T = length(obs);
-  olikseq = mk_dhmm_obs_lik(obs, obsmat);
+for ex=1:numex  % for each sequence
+  obs = data{ex};  % v -- the observations for this sequence (1xn)
+  T = length(obs);  % T -- the length of the sequence
+  olikseq = mk_dhmm_obs_lik(obs, obsmat);  % b_j -- the observation likelihoods, (Mxn)
   if isempty(act)
-    [gamma, xi, current_ll] = forwards_backwards_iohmm(prior, transmat, olikseq);
+    [gamma, xi, current_ll] = forwards_backwards_ktattn(prior, transmat, olikseq);
   else
     [gamma, xi, current_ll] = forwards_backwards_pomdp(prior, transmat, olikseq, act{ex});
   end
@@ -153,14 +153,14 @@ for ex=1:numex
       % act(2) determines Q(2), xi(:,:,1) holds P(Q(1), Q(2))
       A = length(transmat);
       for a=1:A
-    ndx = find(act{ex}(2:end)==a);
-    if ~isempty(ndx)
-      exp_num_trans{a} = exp_num_trans{a} + sum(xi(:,:,ndx), 3);
-    end
+	ndx = find(act{ex}(2:end)==a);
+	if ~isempty(ndx)   % eqn (40b)
+	  exp_num_trans{a} = exp_num_trans{a} + sum(xi(:,:,ndx), 3);
+	end
       end
     end
   end
-  
+              % eqn (40a)
   exp_num_visits1 = exp_num_visits1 + gamma(:,1);
   
   if T < O
@@ -171,8 +171,8 @@ for ex=1:numex
   else
     for o=1:O
       ndx = find(obs==o);
-      if ~isempty(ndx)
-    exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
+      if ~isempty(ndx)  % eqn (40c)
+	exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
       end
     end
   end
@@ -181,4 +181,3 @@ end
 if ~estimated_trans
   exp_num_trans = [];
 end
-

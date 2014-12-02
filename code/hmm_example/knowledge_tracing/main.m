@@ -37,11 +37,11 @@ title(sprintf('state and observations over time'));
 % Estimate parameters with just the sequence as input, using
 % the Baum-Welch algorithm
 A0 =[.5  .5
-           0   1];
+     0.01  0.99];
 b0 = [.5  .5
-           .2  .8];
+      .2  .8];
 p0 = [0.9; 
-           0.1];
+      0.1];
 
 fprintf('Estimating parameters using EM (Baum Welch) MATLAB implementation:\n');
 [A_est_EM_matlab, b_est_EM_matlab] = hmmtrain(x, A0, b0);
