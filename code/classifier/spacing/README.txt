@@ -1,6 +1,6 @@
 These scripts depend on aligned data in ../../../data-lg
 
-Then, run these in order:
+Once you have aligned data, run these in order:
 1. findDataWithGoodEEG
 2. prepareAllAlignedData
 
@@ -13,3 +13,9 @@ To prepare data for the HMM, run
 This will put data for each subject into word sequences, and save them
 to subjects/SUBJECTID_sequences.mat
 
+Then, you can do a few things. To estimate KT params (without any attention 
+data), run:
+1. estimateParamsWithHMM_KTonly
+
+To investigate how time elapsed and attention are correlated, run:
+1. correlateTimeElapsedAndAttention
