@@ -25,12 +25,12 @@ for sid=subjectids'
     data.subjectid = sid;
     data.userid = rawdata.User_ID(idx(1));
     data.stim = cellstr(rawdata.stim);
-    data.timeelapsedms = int32(rawdata.timeelapsedms);
-    data.fluent = int8(rawdata.fluent);
+    data.timeelapsedms = double(rawdata.timeelapsedms);
+    data.fluent = double(rawdata.fluent);
     data.haseeg = goodeegidx;
-    data.attention = int32(rawdata.Attention);
+    data.attention = double(rawdata.Attention);
     data.attention(~goodeegidx) = -1;
-    data.meditation = int32(rawdata.Meditation);
+    data.meditation = double(rawdata.Meditation);
     data.meditation(~goodeegidx) = -1;
     
     save(filename, 'data');
