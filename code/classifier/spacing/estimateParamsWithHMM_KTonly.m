@@ -11,9 +11,9 @@ load('subjects.mat');
 % a complete guess for the learning rate, and assume that the forgetting
 % rate is near zero
 A0 =[.5  .5
-           0   1];
+     0.01   0.99];
 b0 = [.5  .5
-           .2  .8];
+      .5  .5];
 p0 = [0.5; 
            0.5];
        
