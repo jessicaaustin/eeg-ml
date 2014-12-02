@@ -9,7 +9,8 @@ addpath('../../HMM_mat_ext');
 %% Generate observations and plot results
 
 n = 10;
-[ASRobservations, EEGobservations, attentionStates, knowledgeStates, p_true,A_true,b_true] = generateObservations(n);
+[ASRobservations, EEGobservations, attentionStates, knowledgeStates, l0_true, p_learn_true, ...
+    p_forget_true, p_guess_true, p_slip_true, p_ak_true, p_ap_true] = generateObservations(n);
 
 %% Estimate parameters of HMM
     
@@ -26,35 +27,25 @@ x = ASRobservations;
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox ext implementation:\n');
 [LL, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm_iohmm(x, p0, A0, b0, 50, 1E-8);
 
-%% Plot results
-
-figure;
-subplot(1,2,1); bar(p_true, 'r'); title('true initial p');
-subplot(1,2,2); bar(p_est_EM_HMMt); title('learned initial p (HMM Toolbox)');
-
-figure;
-subplot(1,2,1); imagesc(A_true); title('true transition');
-subplot(1,2,2); imagesc(A_est_EM_HMMt); title('learned transition (HMM Toolbox)');
-
-figure;
-subplot(1,2,1); imagesc(b_true); title('true emission');
-subplot(1,2,2); imagesc(b_est_EM_HMMt); title('learned emission (HMM Toolbox)');
-
 
 %% Print out results
 
 Methods = {'Actual Value', 'HMM Toolbox'};
 
-l0 = [p_true(2); 
+l0 = [l0_true; 
       p_est_EM_HMMt(2)];
-p_learn =  [A_true(1,2); 
+p_learn =  [p_learn_true; 
             A_est_EM_HMMt(1,2)];
-p_forget = [A_true(2,1);
+p_forget = [p_forget_true;
             A_est_EM_HMMt(2,1)];
-p_guess = [b_true(1,2);
+p_guess = [p_guess_true;
            b_est_EM_HMMt(1,2)];
-p_slip = [b_true(2,1);
+p_slip = [p_slip_true;
           b_est_EM_HMMt(2,1)];
+p_ak = [p_ak_true;
+        NaN];
+p_ap = [p_ap_true;
+        NaN];
 
-T = table(l0, p_learn, p_forget, p_guess, p_slip, ...
+T = table(l0, p_learn, p_forget, p_guess, p_slip, p_ak, p_ap, ...
     'RowNames', Methods)

@@ -1,5 +1,5 @@
 function [ASRobservations, EEGobservations, attentionStates, knowledgeStates, ...
-          p0_KT, A_KT, b_asr] = generateObservations(n)
+          l0, p_learn, p_forget, p_guess, p_slip, p_ak, p_ap] = generateObservations(n)
 % Generate n observations, based on a latent model
 
 %% Internal Model: Knowledge State
@@ -58,10 +58,13 @@ s_attention = 0.1;  %[variation]
 
 % Knowledge state transitions based on attention state
 p_ak = .8;  % probability that if you pay attention then you learn something
+            % (and also that if you DON'T pay attention, then you don't
+            % learn something)
          % unknown  known
 A_atten = [p_ak   1-p_ak;   % inattentive
            1-p_ak   p_ak];      % attentive
 
+       
 % We observe the time that was elapsed since the last task.
 % We also observe EEG signal, which gives us an observation of the
 % attention state.
@@ -72,7 +75,12 @@ b_eeg = [1-eeg_false_pos  eeg_false_pos;    % inattentive
          eeg_false_neg   1-eeg_false_neg];  % attentive
                                            %   ^ attention state 
  
-ac = .2;
+% Performance based on attention state
+p_ap = 0.6;  % probability that if you  pay attention then you get correct
+             % (and also if you DON'T pay attention, then you get incorrect)
+         % incorrect  correct
+b_atten = [p_ap   1-p_ap;   % inattentive
+           1-p_ap   p_ap];   % attentive
 
 %% Generate Attention states and observations
 
@@ -103,7 +111,8 @@ for i=1:n-1
     current_attention_state = attentionStates(i);
     state_transition_probabilities = A_KT(current_state,:);
     attention_probabilities = A_atten(current_attention_state,:);
-    total_transition_prob = sum(state_transition_probabilities'*attention_probabilities,2);
+    total_transition_prob = state_transition_probabilities.*attention_probabilities;
+    total_transition_prob = total_transition_prob./(sum(total_transition_prob));
     next_state = discreteSample(total_transition_prob,1);
     knowledgeStates(i+1) = next_state;
 end
@@ -111,8 +120,11 @@ end
 % generate observations for each state
 ASRobservations = zeros(n,1);
 for i=1:n
-    sensor_probabilities_for_state = b_asr(knowledgeStates(i),:);
-    ASRobservations(i) = discreteSample(sensor_probabilities_for_state,1);
+    performance_prob_for_knowledge_state = b_asr(knowledgeStates(i),:);
+    performance_prob_for_attention_state = b_atten(attentionStates(i),:);
+    total_observation_prob = performance_prob_for_knowledge_state.*performance_prob_for_attention_state;
+    total_observation_prob = total_observation_prob./(sum(total_observation_prob));
+    ASRobservations(i) = discreteSample(total_observation_prob,1);
 end
  
 end
