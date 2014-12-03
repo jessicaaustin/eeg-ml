@@ -36,7 +36,7 @@ d0 = [.6  .6
       .4  .4];
 
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox ext implementation:\n');
-[LL, p_est, A_est, B_est, C_est, D_est] = learn_dhmm_ktattn(x, p0, A0, b0, c0, d0, 50, 1E-8);
+[LL, p_est, A_est, B_est, C_est, D_est] = learn_dhmm_ktattn(x, p0, A0, b0, c0, d0, 50, 1E-8, 0);
 
 
 %% Print out results
@@ -54,9 +54,9 @@ p_guess = [p_guess_true;
 p_slip = [p_slip_true;
           B_est(2,1)];
 p_ak = [p_learn_a_true;
-        C_est(1,1)];
+        C_est(2,1)];
 p_ap = [p_guess_a_true;
-        D_est(1,1)];
+        D_est(2,1)];
 
 T = table(l0, p_learn, p_forget, p_guess, p_slip, p_ak, p_ap, ...
     'RowNames', Methods)
