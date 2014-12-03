@@ -115,7 +115,7 @@ for ex=1:numex  % for each sequence
     for o=1:O
         ndx = find(obsW(1:end-1)==o);
         xi_w = sum(xi(:,:,ndx),1);
-        Cbar(:,o) = Cbar(:,o) + sum(xi_w,3)';
+        Cbar(o,:) = Cbar(o,:) + sum(xi_w,3);
     end
     
     pibar = pibar + gamma(:,1);  % eqn (40a)
