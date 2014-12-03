@@ -1,4 +1,4 @@
-function [gamma, xi, loglik] = forwards_backwards_ktattn(prior, transmat, obslik, maximize)
+function [gamma, xi, loglik] = forwards_backwards_ktattn(prior, Amat, obslikB, obslikC, obslikD, maximize)
 % FORWARDS_BACKWARDS Compute the posterior probs. in an HMM using the forwards backwards algo.
 % [gamma, xi, loglik] = forwards_backwards(prior, transmat, obslik, maximize)
 % Use obslik = mk_dhmm_obs_lik(data, b) or obslik = mk_ghmm_obs_lik(data, mu, sigma) first.
@@ -13,9 +13,9 @@ function [gamma, xi, loglik] = forwards_backwards_ktattn(prior, transmat, obslik
 % gamma(i,t) = Pr(X(t)=i | O(1:T))
 % xi(i,j,t)  = Pr(X(t)=i, X(t+1)=j | O(1:T)) t <= T-1
 
-if nargin < 4, maximize = 0; end
+if nargin < 4+2, maximize = 0; end
 
-T = size(obslik, 2);   % T -- the length of the sequence
+T = size(obslikB, 2);   % T -- the length of the sequence
 Q = length(prior);     % N -- the number of states
 
 scale = ones(1,T);
@@ -26,16 +26,17 @@ xi = zeros(Q,Q,T-1);
 
 % forward
 t = 1;
-alpha(:,1) = prior(:) .* obslik(:,t);    % eqn (19)
+alpha(:,1) = prior(:) .* obslikB(:,t) .* obslikD(:,t);    % eqn (19)
 [alpha(:,t), scale(t)] = normalise(alpha(:,t));
-transmat2 = transmat';
+Amat2 = Amat';
 for t=2:T
-  if maximize
+  if maximize % false
     A = repmat(alpha(:,t-1), [1 Q]);
-    m = max(transmat .* A, [], 1);
-    [alpha(:,t),scale(t)] = normalise(m(:) .* obslik(:,t));
-  else                         % eqn (20)
-    [alpha(:,t),scale(t)] = normalise((transmat2 * alpha(:,t-1)) .* obslik(:,t));
+    m = max(Amat .* A, [], 1);
+    [alpha(:,t),scale(t)] = normalise(m(:) .* obslikB(:,t));
+    error('should not get here')
+  else                         % eqn (20) [note: in equations, uses t, t+1. here, uses t-1, t]
+    [alpha(:,t),scale(t)] = normalise((Amat2 * (alpha(:,t-1) .* obslikC(:,t-1))) .* obslikB(:,t) .* obslikD(:,t));
   end
   if (scale(t) == 0) | isnan(scale(t)) | ~isreal(scale(t)) 
     fprintf('scale(%d)=%5.3f\n', t, scale(t))
@@ -55,14 +56,15 @@ beta(:,T) = ones(Q,1);
 gamma(:,T) = normalise(alpha(:,T) .* beta(:,T));
 t=T;
 for t=T-1:-1:1
-  b = beta(:,t+1) .* obslik(:,t+1);   % eqn (25)
-  if maximize
+  b = beta(:,t+1) .* obslikB(:,t+1) .* obslikC(:,t) .* obslikD(:,t+1);   % eqn (25)
+  if maximize  % false
     B = repmat(b(:)', Q, 1);
-    beta(:,t) = normalise(max(transmat .* B, [], 2));
+    beta(:,t) = normalise(max(Amat .* B, [], 2));
+    error('should not get here')
   else
-    beta(:,t) = normalise((transmat * b));  % eqn (25)
+    beta(:,t) = normalise((Amat * b));  % eqn (25)
   end
   gamma(:,t) = normalise(alpha(:,t) .* beta(:,t));  % eqn (27)
-  xi(:,:,t) = normalise((transmat .* (alpha(:,t) * b')));
+  xi(:,:,t) = normalise((Amat .* (alpha(:,t) * b')));  % eqn (37)
 end
 

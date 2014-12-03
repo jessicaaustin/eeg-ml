@@ -1,5 +1,5 @@
 function [ASRobservations, EEGobservations, attentionStates, knowledgeStates, ...
-          l0, p_learn, p_forget, p_guess, p_slip, p_ak, p_ap] = generateObservations(n)
+          l0, p_learn, p_forget, p_guess, p_slip, p_learn_a, p_guess_a] = generateObservations(n)
 % Generate n observations, based on a latent model
 
 %% Internal Model: Knowledge State
@@ -57,12 +57,12 @@ T_best = 1; %[second]
 s_attention = 0.1;  %[variation]
 
 % Knowledge state transitions based on attention state
-p_ak = .8;  % probability that if you pay attention then you learn something
-            % (and also that if you DON'T pay attention, then you don't
-            % learn something)
+p_learn_a = .8;  % probability that if you pay attention then you learn something
+                 % (and also that if you DON'T pay attention, then you don't
+                 % learn something)
          % unknown  known
-A_atten = [p_ak   1-p_ak;   % inattentive
-           1-p_ak   p_ak];      % attentive
+A_atten = [p_learn_a   1-p_learn_a;   % inattentive
+           1-p_learn_a   p_learn_a];      % attentive
 
        
 % We observe the time that was elapsed since the last task.
@@ -76,11 +76,11 @@ b_eeg = [1-eeg_false_pos  eeg_false_pos;    % inattentive
                                            %   ^ attention state 
  
 % Performance based on attention state
-p_ap = 0.6;  % probability that if you  pay attention then you get correct
-             % (and also if you DON'T pay attention, then you get incorrect)
+p_guess_a = 0.6;  % probability that if you  pay attention then you get correct
+                 % (and also if you DON'T pay attention, then you get incorrect)
          % incorrect  correct
-b_atten = [p_ap   1-p_ap;   % inattentive
-           1-p_ap   p_ap];   % attentive
+b_atten = [p_guess_a   1-p_guess_a;   % inattentive
+           1-p_guess_a   p_guess_a];   % attentive
 
 %% Generate Attention states and observations
 

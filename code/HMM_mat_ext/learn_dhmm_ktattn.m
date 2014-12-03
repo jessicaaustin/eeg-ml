@@ -1,4 +1,4 @@
-function [LL, prior, transmat, obsmat, gamma] = learn_dhmm_ktattn(data, prior, transmat, obsmat, max_iter, thresh, ...
+function [LL, prior, Amat, Bmat, Cmat, Dmat, gamma] = learn_dhmm_ktattn(data, prior, Amat, Bmat, Cmat, Dmat, max_iter, thresh, ...
 						  verbose, act, adj_prior, adj_trans, adj_obs, dirichlet)
 % LEARN_HMM Find the ML parameters of an HMM with discrete outputs using EM.
 %
@@ -44,19 +44,19 @@ function [LL, prior, transmat, obsmat, gamma] = learn_dhmm_ktattn(data, prior, t
 % This can be useful for online learning and decision making.
 
 %learn_dhmm(data, prior, transmat, obsmat, max_iter, thresh, verbose, act, adj_prior, adj_trans, adj_obs, dirichlet)
-if nargin < 5, max_iter = 10; end
-if nargin < 6, thresh = 1e-4; end
-if nargin < 7, verbose = 1; end
-if nargin < 8
+if nargin < 5+2, max_iter = 10; end
+if nargin < 6+2, thresh = 1e-4; end
+if nargin < 7+2, verbose = 1; end
+if nargin < 8+2
   act = [];
   A = 0;
 else
-  A = length(transmat);
+  A = length(Amat);
 end
-if nargin < 9, adj_prior = 1; end
-if nargin < 10, adj_trans = 1; end
-if nargin < 11, adj_obs = 1; end
-if nargin < 12, dirichlet = 0; end
+if nargin < 9+2, adj_prior = 1; end
+if nargin < 10+2, adj_trans = 1; end
+if nargin < 11+2, adj_obs = 1; end
+if nargin < 12+2, dirichlet = 0; end
 
 previous_loglik = -inf;
 loglik = 0;
@@ -75,28 +75,30 @@ numex = length(data);
 
 while (num_iter <= max_iter) & ~converged
   % E step
-  [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, gamma] = ...
-      compute_ess(prior, transmat, obsmat, data, act, dirichlet);
+  [loglik, Abar, pibar, Bbar, Cbar, Dbar, gamma] = ...
+      compute_ess(prior, Amat, Bmat, Cmat, Dmat, data, act, dirichlet);
 
   if verbose, fprintf(1, 'iteration %d, loglik = %f\n', num_iter, loglik); end
   num_iter =  num_iter + 1;
 
   % M step
   if adj_prior
-    prior = normalise(exp_num_visits1);
+    prior = normalise(pibar);
   end
-  if adj_trans & ~isempty(exp_num_trans)
+  if adj_trans & ~isempty(Abar)
     if isempty(act)
-      transmat = mk_stochastic(exp_num_trans);
+      Amat = mk_stochastic(Abar);
     else
       for a=1:A
-	transmat{a} = mk_stochastic(exp_num_trans{a});
+	Amat{a} = mk_stochastic(Abar{a});
       end
     end
   end
   if adj_obs
-    obsmat = mk_stochastic(exp_num_emit);
+    Bmat = mk_stochastic(Bbar);
   end
+  Cmat = mk_stochastic(Cbar);
+  Dmat = mk_stochastic(Dbar);
   
   converged = em_converged(loglik, previous_loglik, thresh);
   previous_loglik = loglik;
@@ -106,8 +108,8 @@ end
 
 %%%%%%%%%%%
 
-function [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, gamma] = ...
-    compute_ess(prior, transmat, obsmat, data, act, dirichlet)
+function [loglik, Abar, pibar, Bbar, Cbar, Dbar, gamma] = ...
+    compute_ess(prior, Amat, Bmat, Cmat, Dmat, data, act, dirichlet)
 %
 % Compute the Expected Sufficient Statistics for a discrete Hidden Markov Model.
 %
@@ -118,66 +120,85 @@ function [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, gamma] = ...
 % where Obs(l) = O_1 .. O_T for sequence l.
 
 numex = length(data);
-[S O] = size(obsmat);
-if isempty(act)
-  exp_num_trans = zeros(S,S);
+[S O] = size(Bmat);
+if isempty(act) % true
+  Abar = zeros(S,S);
+  Cbar = zeros(S,S);
   A = 0;
 else
-  A = length(transmat);
-  exp_num_trans = cell(1,A);
+  A = length(Amat);
+  Abar = cell(1,A);
   for a=1:A
-    exp_num_trans{a} = zeros(S,S);
+    Abar{a} = zeros(S,S);
   end
+  error('should not get here')
 end
-exp_num_visits1 = zeros(S,1);
-exp_num_emit = dirichlet*ones(S,O);
+pibar = zeros(S,1);
+Bbar = dirichlet*ones(S,O);
+Dbar = dirichlet*ones(S,O);
 loglik = 0;
 estimated_trans = 0;
 
 for ex=1:numex  % for each sequence
-  obs = data{ex};  % v -- the observations for this sequence (1xn)
+  obs = data{ex};
+  obsV = obs(1,:);  % v -- the observations for this sequence (1xn)
+  obsW = obs(2,:);  % v -- the observations for this sequence (1xn)
   T = length(obs);  % T -- the length of the sequence
-  olikseq = mk_dhmm_obs_lik(obs, obsmat);  % b_j -- the observation likelihoods, (Mxn)
+  obslikB = mk_dhmm_obs_lik(obsV, Bmat);  % b_j -- the observation likelihoods (performance), (M_P x n)
+  obslikC = mk_dhmm_obs_lik(obsW, Cmat);  % c_i -- the attention->knowledge likelihoods (attention), (M_A x n)
+  obslikD = mk_dhmm_obs_lik(obsW, Dmat);  % d_j -- the observation likelihoods (attention), (M_A x n)
   if isempty(act)
-    [gamma, xi, current_ll] = forwards_backwards_ktattn(prior, transmat, olikseq);
+    [gamma, xi, current_ll] = forwards_backwards_ktattn(prior, Amat, obslikB, obslikC, obslikD);
   else
-    [gamma, xi, current_ll] = forwards_backwards_pomdp(prior, transmat, olikseq, act{ex});
+    [gamma, xi, current_ll] = forwards_backwards_pomdp(prior, Amat, obslikB, act{ex});
   end
   loglik = loglik +  current_ll; 
 
   if T > 1
     estimated_trans = 1;
-    if isempty(act)
-      exp_num_trans = exp_num_trans + sum(xi,3);
+    if isempty(act) % true
+      Abar = Abar + sum(xi,3);
     else
       % act(2) determines Q(2), xi(:,:,1) holds P(Q(1), Q(2))
-      A = length(transmat);
+      A = length(Amat);
       for a=1:A
-	ndx = find(act{ex}(2:end)==a);
-	if ~isempty(ndx)   % eqn (40b)
-	  exp_num_trans{a} = exp_num_trans{a} + sum(xi(:,:,ndx), 3);
-	end
+        ndx = find(act{ex}(2:end)==a);
+        if ~isempty(ndx)   % eqn (40b)
+          Abar{a} = Abar{a} + sum(xi(:,:,ndx), 3);
+        end
       end
+      error('should not get here')
+    end
+    
+    for o=1:O
+        ndx = find(obsW(1:end-1)==o);
+        xi_w = sum(xi(:,:,ndx),2);
+        Cbar(:,o) = Cbar(:,o) + sum(xi_w,3);
     end
   end
               % eqn (40a)
-  exp_num_visits1 = exp_num_visits1 + gamma(:,1);
+  pibar = pibar + gamma(:,1);
   
-  if T < O
+  if T < O  % false
     for t=1:T
-      o = obs(t);
-      exp_num_emit(:,o) = exp_num_emit(:,o) + gamma(:,t);
+      o = obsV(t);
+      Bbar(:,o) = Bbar(:,o) + gamma(:,t);
     end
+    error('should not get here (sequence less than num states)');
   else
     for o=1:O
-      ndx = find(obs==o);
+      ndx = find(obsV==o);
       if ~isempty(ndx)  % eqn (40c)
-	exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
+        Bbar(:,o) = Bbar(:,o) + sum(gamma(:, ndx), 2);
+      end
+      ndx = find(obsW==o);
+      if ~isempty(ndx)  % eqn (40c)
+        Dbar(:,o) = Dbar(:,o) + sum(gamma(:, ndx), 2);
       end
     end
   end
 end
 
 if ~estimated_trans
-  exp_num_trans = [];
+  Abar = [];
 end
