@@ -39,18 +39,6 @@ c0 = [.6  .4
       .4  .6];
 d0 = [.6  .4
       .4  .6];
-  
-% perfect params:
-% p0 = [0.8; 
-%       0.2];
-% A0 =[.3  .7
-%     0.05   0.95];
-% b0 = [.6  .4
-%       .2  .8];
-% c0 = [.8  .2
-%       .2  .8];
-% d0 = [.6  .4
-%       .4  .6];
 
 fprintf('Estimating parameters using EM (Baum Welch) HMM Toolbox modified implementation:\n');
 [LL, p_est, A_est, B_est, C_est, D_est] = learn_dhmm_ktattn(x, p0, A0, b0, c0, d0, maxiter, thresh, verbose);

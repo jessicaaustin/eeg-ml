@@ -36,17 +36,17 @@ for sid=subjectids'
     
     x = sequences.accept;
     
-    [LL, p_est_EM_HMMt, A_est_EM_HMMt, b_est_EM_HMMt] = learn_dhmm(x, p0, A0, b0, max_iter, thresh);
+    [LL, p_est, A_est, b_est] = learn_dhmm(x, p0, A0, b0, max_iter, thresh);
 
-    l0 = p_est_EM_HMMt(2)
-    p_learn =  A_est_EM_HMMt(1,2)
-    p_forget = A_est_EM_HMMt(2,1)
-    p_guess = b_est_EM_HMMt(1,2)
-    p_slip = b_est_EM_HMMt(2,1)
+    l0 = p_est(2)
+    p_learn =  A_est(1,2)
+    p_forget = A_est(2,1)
+    p_guess = b_est(1,2)
+    p_slip = b_est(2,1)
 
     subjectid = sid;
-    A = A_est_EM_HMMt;
-    b = b_est_EM_HMMt;
+    A = A_est;
+    b = b_est;
     save(filename, 'subjectid', ...
         'LL', 'A', 'b', ...
         'l0', 'p_learn', 'p_forget', 'p_guess', 'p_slip');

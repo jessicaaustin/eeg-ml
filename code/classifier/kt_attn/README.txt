@@ -17,5 +17,13 @@ Then, you can do a few things. To estimate KT params (without any attention
 data), run:
 1. estimateParamsWithHMM_KTonly
 
+To estimate KT-Attn params, run:
+1. calculateAttentionThresh
+2. estimateParamsWithHMM_KTAttn
+
+The first step defines the difference between "attentive" and "inattentive"
+The second step actually estimates params.
+
 To investigate how time elapsed and attention are correlated, run:
 1. correlateTimeElapsedAndAttention
+
