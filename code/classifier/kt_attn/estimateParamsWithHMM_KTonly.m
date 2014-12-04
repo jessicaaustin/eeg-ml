@@ -4,51 +4,31 @@ close all;
 addpath('../../HMM_mat');
 
 load('subjects.mat');
+N = length(subjectids);
+
+recompute = false;
 
 %% Estimate Params
 
-% initial estimates for KT params
-% a complete guess for the learning rate, and assume that the forgetting
-% rate is near zero
-A0 =[.5  .5
-     0.01   0.99];
-b0 = [.5  .5
-      .5  .5];
-p0 = [0.5; 
-           0.5];
-       
-% EM params
-max_iter = 500;
-thresh = 1e-8;
+for i=1:N
+    subjectid=subjectids{i};
+    fprintf('%s:\n', char(subjectid));
 
-for sid=subjectids'
-    fprintf('%s:\n', char(sid));
-
-    filename = char(strcat('subjects/', sid, '_KTparams.mat'));
+    filename = char(strcat('subjects/', subjectid, '_KTparams.mat'));
     
-    if exist(filename, 'file')
+    if ~recompute && exist(filename, 'file')
         fprintf('already exists, continuing\n');
         continue;
     end
     
-    seqs_filename = char(strcat('subjects/', sid, '_sequences.mat'));
+    seqs_filename = char(strcat('subjects/', subjectid, '_sequences.mat'));
     load(seqs_filename);
     
-    x = sequences.accept;
-    
-    [LL, p_est, A_est, b_est] = learn_dhmm(x, p0, A0, b0, max_iter, thresh);
-
-    l0 = p_est(2)
-    p_learn =  A_est(1,2)
-    p_forget = A_est(2,1)
-    p_guess = b_est(1,2)
-    p_slip = b_est(2,1)
-
-    subjectid = sid;
-    A = A_est;
-    b = b_est;
+    [LL,p,A,B,C,D, l0, p_learn, p_forget, p_guess, p_slip] ...
+        = estimateParamsForSubject(sequences, 1:length(sequences), 'KT');
+   
     save(filename, 'subjectid', ...
-        'LL', 'A', 'b', ...
+        'LL', 'A', 'B', ...
         'l0', 'p_learn', 'p_forget', 'p_guess', 'p_slip');
 
 end
@@ -56,6 +36,25 @@ end
 
 %% Display Results
 
+p0 = [0.5; 
+      0.5];
+p_learn_0 = 0.7;
+p_forget_0 = 0.01;
+A0 =[1-p_forget_0  p_forget_0
+     1-p_learn_0   p_learn_0];
+p_guess_0 = 0.4;
+p_slip_0 = 0.2;
+B0 = [p_guess_0   1-p_guess_0
+      p_slip_0    1-p_slip_0];
+p_learn_a_0 = 0.7;
+p_dontlearn_a_0 = 0.8;
+C0 = [p_dontlearn_a_0   1-p_dontlearn_a_0
+      1-p_learn_a_0     p_learn_a_0];
+p_guess_a_0 = 0.6;
+p_slip_a_0 = 0.7;
+D0 = [p_slip_a_0      1-p_slip_a_0
+      1-p_guess_a_0   p_guess_a_0];
+  
 N = length(subjectids);
 all_l0 = zeros(N,1);
 all_p_learn = zeros(N,1);
@@ -64,8 +63,8 @@ all_p_guess = zeros(N,1);
 all_p_slip = zeros(N,1);
 
 for i=1:N
-    sid=subjectids{i};
-    filename = char(strcat('subjects/', sid, '_KTparams.mat'));
+    subjectid=subjectids{i};
+    filename = char(strcat('subjects/', subjectid, '_KTparams.mat'));
     load(filename);
     
     all_l0(i) = l0;
@@ -81,30 +80,37 @@ figure; hold on;
     errorbar(round(N/2), mean(all_l0), std(all_l0));
     title('l0')
     ylim([0 1]);
-figure; hold on;
-    plot(repmat(A0(1,2), N, 1), 'k:');
-    plot(all_p_learn,'ro')
-    errorbar(round(N/2), mean(all_p_learn), std(all_p_learn));
-    title('p\_learn')
-    ylim([0 1]);
-figure; hold on;
-    plot(repmat(A0(2,1), N, 1), 'k:');
-    plot(all_p_forget,'ro')
-    errorbar(round(N/2), mean(all_p_forget), std(all_p_forget));
-    title('p\_forget')
-    ylim([0 1]);
-figure; hold on;
-    plot(repmat(b0(1,2), N, 1), 'k:');
-    plot(all_p_guess,'ro')
-    errorbar(round(N/2), mean(all_p_guess), std(all_p_guess));
-    title('p\_guess')
-    ylim([0 1]);
-figure; hold on;
-    plot(repmat(b0(2,1), N, 1), 'k:');
-    plot(all_p_slip,'ro')
-    errorbar(round(N/2), mean(all_p_slip), std(all_p_slip));
-    title('p\_slip')
-    ylim([0 1]);
+    
+figure; 
+    subplot(1,2,1); hold on;
+        plot(repmat(p_learn_0, N, 1), 'k:');
+        plot(all_p_learn,'ro')
+%         errorbar(round(N/2), mean(all_p_learn), std(all_p_learn));
+        title('Learn Rate (l)')
+        ylim([0 1]);
+    subplot(1,2,2); hold on;
+        plot(repmat(p_forget_0, N, 1), 'k:');
+        plot(all_p_forget,'ro')
+%         errorbar(round(N/2), mean(all_p_forget), std(all_p_forget));
+        title('Forget Rate (f)')
+        ylim([0 1]);
+    suptitle('A')
+    
+figure;
+    subplot(1,2,1); hold on;
+        plot(repmat(p_guess_0, N, 1), 'k:');
+        plot(all_p_guess,'ro')
+%         errorbar(round(N/2), mean(all_p_guess), std(all_p_guess));
+        title('p\_guess')
+        ylim([0 1]);
+    subplot(1,2,2); hold on;
+        plot(repmat(p_slip_0, N, 1), 'k:');
+        plot(all_p_slip,'ro')
+%         errorbar(round(N/2), mean(all_p_slip), std(all_p_slip));
+        title('p\_slip')
+        ylim([0 1]);
+    suptitle('B')
+
 
     
 %% Notes
