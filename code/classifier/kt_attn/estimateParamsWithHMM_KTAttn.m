@@ -32,56 +32,27 @@ p_slip_a_0 = 0.7;
 D0 = [p_slip_a_0      1-p_slip_a_0
       1-p_guess_a_0   p_guess_a_0];
        
-% EM params
-max_iter = 500;
-thresh = 1e-8;
-verbose = 1;
-
 
 %% Estimate Params
 
 for i=1:N
-    sid=subjectids{i};
-    fprintf('%s:\n', char(sid));
+    subjectid=subjectids{i};
+    fprintf('%s:\n', char(subjectid));
 
-    filename = char(strcat('subjects/', sid, '_KTAttn.mat'));
+    filename = char(strcat('subjects/', subjectid, '_KTAttn.mat'));
     
     if ~recompute && exist(filename, 'file')
         fprintf('already exists, continuing\n');
         continue;
     end
     
-    seqs_filename = char(strcat('subjects/', sid, '_sequences.mat'));
+    % load sequences
+    seqs_filename = char(strcat('subjects/', subjectid, '_sequences.mat'));
     load(seqs_filename);
-    
-    O = length(sequences.accept);
-    x = cell(O,1);
-    for o=1:O
-        ASRobservations = sequences.accept{o};
-        EEGobservations = thresholdAndFillAttention(sequences.attention{o}, sequences);
-        x{o} = [ASRobservations';
-                EEGobservations'];
-    end
-    
-    % E-M algorithm
-    [LL, p_est, A_est, B_est, C_est, D_est] = learn_dhmm_ktattn(x, p0, A0, B0, C0, D0, max_iter, thresh, verbose);
 
-    l0 = p_est(2)
-    p_learn =  A_est(2,2)
-    p_forget = A_est(1,2)
-    p_guess = B_est(1,1)
-    p_slip = B_est(2,1)
-    p_learn_a = C_est(2,2)
-    p_dontlearn_a = C_est(1,1)
-    p_guess_a = D_est(2,2)
-    p_slip_a = D_est(1,1)
+    [LL,p,A,B,C,D, l0, p_learn, p_forget, p_guess, p_slip, p_learn_a, p_dontlearn_a, p_guess_a, p_slip_a] ...
+        = estimateParamsForSubject(sequences,p0,A0,B0,C0,D0);
     
-    subjectid = sid;
-    p = p_est;
-    A = A_est;
-    B = B_est;
-    C = C_est;
-    D = D_est;
     save(filename, 'subjectid', ...
         'LL', 'A', 'B', 'C', 'D', 'p', ...
         'l0', 'p_learn', 'p_forget', 'p_guess', 'p_slip', ...
@@ -105,8 +76,8 @@ all_p_slip_a = zeros(N,1);
 
 i = 1;
 for idx=1:N
-    sid=subjectids{idx};
-    filename = char(strcat('subjects/', sid, '_KTAttn.mat'));
+    subjectid=subjectids{idx};
+    filename = char(strcat('subjects/', subjectid, '_KTAttn.mat'));
     load(filename);
     
     if sum(diff(LL)<0) > 3
