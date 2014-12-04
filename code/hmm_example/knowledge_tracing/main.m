@@ -19,7 +19,7 @@ figure; hold on;
 
 for w=1:100  % number of words they saw
     
-    [x_w, S_w, A_true, b_true, p_true] = generateObservations(n);
+    [x_w, S_w, A_true, b_true, p_true] = generateObservations_KT(n);
     x{w} = x_w';
     
     for i=1:n

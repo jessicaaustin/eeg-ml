@@ -19,7 +19,7 @@ for w=1:100  % number of words they saw
     
     [ASRobservations, EEGobservations, attentionStates, knowledgeStates, ...
         l0_true, p_learn_true, p_forget_true, p_guess_true, p_slip_true,  ...
-        p_learn_a_true, p_dontlearn_a_true, p_guess_a_true, p_slip_a_true] = generateObservations(n);
+        p_learn_a_true, p_dontlearn_a_true, p_guess_a_true, p_slip_a_true] = generateObservations_KTAttn(n);
     x{w} = [ASRobservations';
             EEGobservations'];
     

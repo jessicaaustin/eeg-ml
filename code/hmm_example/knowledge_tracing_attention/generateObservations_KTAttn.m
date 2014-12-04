@@ -1,5 +1,5 @@
 function [ASRobservations, EEGobservations, attentionStates, knowledgeStates, ...
-          l0, p_learn, p_forget, p_guess, p_slip, p_learn_a, p_dontlearn_a, p_guess_a, p_slip_a] = generateObservations(n)
+          l0, p_learn, p_forget, p_guess, p_slip, p_learn_a, p_dontlearn_a, p_guess_a, p_slip_a] = generateObservations_KTAttn(n)
 % Generate n observations, based on a latent model
 
 %% Internal Model: Knowledge State
