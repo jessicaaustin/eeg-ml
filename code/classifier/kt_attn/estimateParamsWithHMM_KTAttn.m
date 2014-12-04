@@ -6,7 +6,7 @@ addpath('../../HMM_mat');
 load('subjects.mat');
 N = length(subjectids);
 
-recompute = false;
+recompute = true;
 
 %% Setup
 
@@ -58,11 +58,12 @@ for i=1:N
     x = cell(O,1);
     for o=1:O
         ASRobservations = sequences.accept{o};
-        EEGobservations = binaryAttention(sequences.attention{o});
+        EEGobservations = thresholdAndFillAttention(sequences.attention{o}, sequences);
         x{o} = [ASRobservations';
                 EEGobservations'];
     end
     
+    % E-M algorithm
     [LL, p_est, A_est, B_est, C_est, D_est] = learn_dhmm_ktattn(x, p0, A0, B0, C0, D0, max_iter, thresh, verbose);
 
     l0 = p_est(2)
@@ -102,10 +103,16 @@ all_p_dontlearn_a = zeros(N,1);
 all_p_guess_a = zeros(N,1);
 all_p_slip_a = zeros(N,1);
 
-for i=1:N
-    sid=subjectids{i};
+i = 1;
+for idx=1:N
+    sid=subjectids{idx};
     filename = char(strcat('subjects/', sid, '_KTAttn.mat'));
     load(filename);
+    
+    if sum(diff(LL)<0) > 3
+        fprintf('%d: decreasing LL... skipping\n', idx);
+        continue;
+    end
     
     all_l0(i) = l0;
     all_p_learn(i) = p_learn;
@@ -116,6 +123,8 @@ for i=1:N
     all_p_dontlearn_a(i) = p_dontlearn_a;
     all_p_guess_a(i) = p_guess_a;
     all_p_slip_a(i) = p_slip_a;
+    
+    i = i + 1;
 end
 
 figure; hold on;
