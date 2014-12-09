@@ -7,14 +7,16 @@ addpath('../../HMM_mat_ext');
 
 load('subjects.mat');
 N = length(subjectids);
+load('testTrainIdx');
+
+rng('default');
+rng(3);
 
 %% Estimate Params
 
 allActualAsrObservation = [];
 allEstAsrObservation_KT = [];
 allEstAsrObservation_KTAttn = [];
-
-testTrainIdx = {};
 
 for i=1:N
     subjectid=subjectids{i};
@@ -25,14 +27,8 @@ for i=1:N
     load(seqs_filename);
     
     % split into testing and training set
-    sN = length(sequences.accept);
-    Ntrain = round(.9*sN);
-    allIdx = (1:sN)';
-    idx = randperm(sN);
-    idxTrain = sort(allIdx(idx(1:Ntrain)));
-    idxTest = sort(allIdx(idx(Ntrain+1:end)));
-    testTrainIdx{i}.idxTrain = idxTrain;
-    testTrainIdx{i}.idxTest = idxTest;
+    idxTrain = testTrainIdx{i}.idxTrain;
+    idxTest = testTrainIdx{i}.idxTest;
 
     % estimate params on training set
     [~,p_KT,A_KT,B_KT] = estimateParamsForSubject(sequences, idxTrain, 'KT');
@@ -62,8 +58,7 @@ for i=1:N
     
 end
 
-save('testTrainIdx', 'testTrainIdx');
-
+save(sprintf('latestResults_%d.mat', randi(1000)), 'allActualAsrObservation', 'allEstAsrObservation_KT', 'allEstAsrObservation_KTAttn');
 
 %% Plot ROC curve
 
