@@ -1,7 +1,9 @@
 clear;
 % close all;
 
+addpath('../../common');
 addpath('../../HMM_mat');
+addpath('../../HMM_mat_ext');
 
 load('subjects.mat');
 N = length(subjectids);
@@ -11,6 +13,8 @@ N = length(subjectids);
 allActualAsrObservation = [];
 allEstAsrObservation_KT = [];
 allEstAsrObservation_KTAttn = [];
+
+testTrainIdx = {};
 
 for i=1:N
     subjectid=subjectids{i};
@@ -27,6 +31,8 @@ for i=1:N
     idx = randperm(sN);
     idxTrain = sort(allIdx(idx(1:Ntrain)));
     idxTest = sort(allIdx(idx(Ntrain+1:end)));
+    testTrainIdx{i}.idxTrain = idxTrain;
+    testTrainIdx{i}.idxTest = idxTest;
 
     % estimate params on training set
     [~,p_KT,A_KT,B_KT] = estimateParamsForSubject(sequences, idxTrain, 'KT');
@@ -56,7 +62,7 @@ for i=1:N
     
 end
 
-
+save('testTrainIdx', 'testTrainIdx');
 
 
 %% Plot ROC curve
