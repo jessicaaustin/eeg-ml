@@ -77,3 +77,32 @@ hFig=figure; hold on;
     set(gca,'XTickLabel',a,'fontsize',14)
         
     set(hFig, 'Position', [0 0  400 300])
+
+    
+%% Plot results
+
+load('latestResults_KTAttnSlightlyBetter_NoTimeElapsed');
+allEstAsrObservation_KTAttn_NoTE = allEstAsrObservation_KTAttn;
+
+load('latestResults_KTAttnSlightlyBetter_ThresholdTimeElapsedPos');
+allEstAsrObservation_KTAttn_TE = allEstAsrObservation_KTAttn;
+
+[X_KT,Y_KT] = perfcurve(allActualAsrObservation,allEstAsrObservation_KT_3,2);
+[X_KTAttn_NoTE,Y_KTAttn_NoTE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_NoTE,2);
+[X_KTAttn_TE,Y_KTAttn_TE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_TE,2);
+hFig=figure; hold on;
+    plot(X_KT,Y_KT, 'b', 'LineWidth', 3)
+    plot(X_KTAttn_NoTE,Y_KTAttn_NoTE, 'm--', 'LineWidth', 3)
+    plot(X_KTAttn_TE,Y_KTAttn_TE, 'r--', 'LineWidth', 3)
+    l=legend('KT', 'KT-Attn (EEG only)', 'KT-Attn (EEG with time elapsed)', 'Location', 'southeast');
+    xlabel('False positive rate'); 
+    ylabel('True positive rate')
+    
+    figureHandle = gcf;
+    set(findall(figureHandle,'type','text'),'fontSize',14);
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel',a,'fontsize',14)
+        
+    set(hFig, 'Position', [0 0  600 500])
+
+    

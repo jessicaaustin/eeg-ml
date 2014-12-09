@@ -24,6 +24,11 @@ To estimate KT-Attn params, run:
 The first step defines the difference between "attentive" and "inattentive"
 The second step actually estimates params.
 
+To compare models, run:
+1. createTestTrainIdx
+2. evaluateModel
+
 To investigate how time elapsed and attention are correlated, run:
 1. correlateTimeElapsedAndAttention
+
 
