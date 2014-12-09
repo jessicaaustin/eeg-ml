@@ -38,7 +38,7 @@ for i=1:N
     for si = idxTest(:)'
         
         actualAsrObservations = sequences.accept{si};
-        actualEEGObservations = thresholdAndFillAttention(sequences.attention{si}, sequences);
+        actualEEGObservations = thresholdAndFillAttention(sequences.attention{si}, sequences.timeelapsed{si}, sequences);
         v0 = actualAsrObservations(1);
         w0 = actualEEGObservations(1);
         T = length(actualAsrObservations);
@@ -64,9 +64,16 @@ save(sprintf('latestResults_%d.mat', randi(1000)), 'allActualAsrObservation', 'a
 
 [X_KT,Y_KT] = perfcurve(allActualAsrObservation,allEstAsrObservation_KT,2);
 [X_KTAttn,Y_KTAttn] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn,2);
-figure; hold on;
-    plot(X_KT,Y_KT, 'k--')
-    plot(X_KTAttn,Y_KTAttn, 'k')
-    legend('KT', 'KT-Attn');
+hFig=figure; hold on;
+    plot(X_KT,Y_KT, 'b', 'LineWidth', 3)
+    plot(X_KTAttn,Y_KTAttn, 'r--', 'LineWidth', 3)
+    l=legend('KT', 'KT-Attn', 'Location', 'southeast');
     xlabel('False positive rate'); 
     ylabel('True positive rate')
+    
+    figureHandle = gcf;
+    set(findall(figureHandle,'type','text'),'fontSize',14);
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel',a,'fontsize',14)
+        
+    set(hFig, 'Position', [0 0  400 300])

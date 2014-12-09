@@ -42,7 +42,7 @@ for o=Oidx(:)'
     ASRobservations = sequences.accept{o};
     
     if strcmp(model, 'KTAttn')
-        EEGobservations = thresholdAndFillAttention(sequences.attention{o}, sequences);
+        EEGobservations = thresholdAndFillAttention(sequences.attention{o}, sequences.timeelapsed{o}, sequences);
         x{end+1} = [ASRobservations';
             EEGobservations'];
     elseif strcmp(model, 'KT')

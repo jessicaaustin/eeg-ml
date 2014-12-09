@@ -24,8 +24,9 @@ for sid=subjectids'
     total_encounters = 0;
     accept = cell(numUniqueWords,1);
     timeelapsed = cell(numUniqueWords,1);
+    all_timeelapsed = [];
     attention = cell(numUniqueWords,1);
-    all_attention =[];
+    all_attention = [];
     meditation = cell(numUniqueWords,1);
     hasfulleeg = zeros(numUniqueWords,1);
     seqsIdx = 1;
@@ -51,6 +52,7 @@ for sid=subjectids'
             accept{seqsIdx} = asrResult;
             
             timeelapsed{seqsIdx} = data.timeelapsedms(wordIdx);
+            all_timeelapsed = [all_timeelapsed; timeelapsed{seqsIdx}];
             attentionForSequence = data.attention(wordIdx);
             attention{seqsIdx} = attentionForSequence;
             all_attention = [all_attention; attentionForSequence(attentionForSequence~=-1)];
@@ -86,6 +88,8 @@ for sid=subjectids'
     sequences.words = words;
     sequences.accept = accept;
     sequences.timeelapsed = timeelapsed;
+    sequences.meanTimeElapsed = mean(all_timeelapsed);
+    sequences.varianceTimeElapsed = std(double(all_timeelapsed));
     sequences.attention = attention;
     sequences.meanAttention = mean(all_attention);
     sequences.varianceAttention = std(double(all_attention));

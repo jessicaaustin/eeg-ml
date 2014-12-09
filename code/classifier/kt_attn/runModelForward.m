@@ -6,7 +6,9 @@ asrObservations(1) = v0;
 knowledgeStates = zeros(T,1);
 
 % TODO: why are rows flipped here? are they actually flipped?
-A = A;
+A = flipud(A);
+C = flipud(C);
+D = flipud(D);
 
 if strcmp(model, 'KTAttn')
     attentionStates = Ow;
