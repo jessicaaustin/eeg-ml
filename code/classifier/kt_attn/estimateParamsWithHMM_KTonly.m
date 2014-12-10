@@ -57,10 +57,10 @@ D0 = [p_slip_a_0      1-p_slip_a_0
   
 N = length(subjectids);
 all_l0 = zeros(N,1);
-all_p_learn = zeros(N,1);
-all_p_forget = zeros(N,1);
-all_p_guess = zeros(N,1);
-all_p_slip = zeros(N,1);
+all_p_learn_KT = zeros(N,1);
+all_p_forget_KT = zeros(N,1);
+all_p_guess_KT = zeros(N,1);
+all_p_slip_KT = zeros(N,1);
 
 for i=1:N
     subjectid=subjectids{i};
@@ -68,10 +68,10 @@ for i=1:N
     load(filename);
     
     all_l0(i) = l0;
-    all_p_learn(i) = p_learn;
-    all_p_forget(i) = p_forget;
-    all_p_guess(i) = p_guess;
-    all_p_slip(i) = p_slip;
+    all_p_learn_KT(i) = p_learn;
+    all_p_forget_KT(i) = p_forget;
+    all_p_guess_KT(i) = p_guess;
+    all_p_slip_KT(i) = p_slip;
 end
 
 figure; hold on;
@@ -84,13 +84,13 @@ figure; hold on;
 figure; 
     subplot(1,2,1); hold on;
         plot(repmat(p_learn_0, N, 1), 'k:');
-        plot(all_p_learn,'ro')
+        plot(all_p_learn_KT,'ro')
 %         errorbar(round(N/2), mean(all_p_learn), std(all_p_learn));
         title('Learn Rate (l)')
         ylim([0 1]);
     subplot(1,2,2); hold on;
         plot(repmat(p_forget_0, N, 1), 'k:');
-        plot(all_p_forget,'ro')
+        plot(all_p_forget_KT,'ro')
 %         errorbar(round(N/2), mean(all_p_forget), std(all_p_forget));
         title('Forget Rate (f)')
         ylim([0 1]);
@@ -99,13 +99,13 @@ figure;
 figure;
     subplot(1,2,1); hold on;
         plot(repmat(p_guess_0, N, 1), 'k:');
-        plot(all_p_guess,'ro')
+        plot(all_p_guess_KT,'ro')
 %         errorbar(round(N/2), mean(all_p_guess), std(all_p_guess));
         title('p\_guess')
         ylim([0 1]);
     subplot(1,2,2); hold on;
         plot(repmat(p_slip_0, N, 1), 'k:');
-        plot(all_p_slip,'ro')
+        plot(all_p_slip_KT,'ro')
 %         errorbar(round(N/2), mean(all_p_slip), std(all_p_slip));
         title('p\_slip')
         ylim([0 1]);

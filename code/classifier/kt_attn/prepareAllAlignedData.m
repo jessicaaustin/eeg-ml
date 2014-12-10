@@ -3,7 +3,6 @@ clear;
 
 load('subjects.mat', 'subjectids');
 
-% sid='mjs6-8-2001-09-24'
 for sid=subjectids'
     tic
     

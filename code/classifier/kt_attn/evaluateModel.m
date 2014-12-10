@@ -87,9 +87,9 @@ allEstAsrObservation_KTAttn_NoTE = allEstAsrObservation_KTAttn;
 load('latestResults_KTAttnSlightlyBetter_ThresholdTimeElapsedPos');
 allEstAsrObservation_KTAttn_TE = allEstAsrObservation_KTAttn;
 
-[X_KT,Y_KT] = perfcurve(allActualAsrObservation,allEstAsrObservation_KT_3,2);
-[X_KTAttn_NoTE,Y_KTAttn_NoTE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_NoTE,2);
-[X_KTAttn_TE,Y_KTAttn_TE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_TE,2);
+[X_KT,Y_KT,~,AUC_KT] = perfcurve(allActualAsrObservation,allEstAsrObservation_KT,2);
+[X_KTAttn_NoTE,Y_KTAttn_NoTE,~,AUC_KTAttn_NoTE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_NoTE,2);
+[X_KTAttn_TE,Y_KTAttn_TE,~,AUC_KTAttn_TE] = perfcurve(allActualAsrObservation,allEstAsrObservation_KTAttn_TE,2);
 hFig=figure; hold on;
     plot(X_KT,Y_KT, 'b', 'LineWidth', 3)
     plot(X_KTAttn_NoTE,Y_KTAttn_NoTE, 'm--', 'LineWidth', 3)
@@ -104,5 +104,10 @@ hFig=figure; hold on;
     set(gca,'XTickLabel',a,'fontsize',14)
         
     set(hFig, 'Position', [0 0  600 500])
+
+    
+AUC = [AUC_KT; AUC_KTAttn_NoTE; AUC_KTAttn_TE];
+Methods = {'KT', 'KTAttn_noTE', 'KTAttn_withTE'};   
+T = table(AUC, 'RowNames', Methods)
 
     

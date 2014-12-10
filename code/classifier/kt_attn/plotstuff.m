@@ -3,7 +3,7 @@ figure;
     subplot(1,2,1); hold on;
         plot(repmat(p_learn_0, N, 1), 'k--', 'LineWidth', 3);
         plot(all_p_learn_KT,'ro', 'LineWidth', 3, 'MarkerSize', 5)
-        plot(all_p_learn,'bo', 'LineWidth', 3, 'MarkerSize', 5)
+        plot(all_p_learn_KTAttn,'bo', 'LineWidth', 3, 'MarkerSize', 5)
         title('Learn Rate (l)')
         ylim([-.1 1]);
         xlabel('Subject ID')
@@ -14,7 +14,7 @@ figure;
     subplot(1,2,2); hold on;
         plot(repmat(p_forget_0, N, 1), 'k--', 'LineWidth', 3);
         plot(all_p_forget_KT,'ro', 'LineWidth', 3, 'MarkerSize', 5)
-        plot(all_p_forget,'bo', 'LineWidth', 3, 'MarkerSize', 5)
+        plot(all_p_forget_KTAttn,'bo', 'LineWidth', 3, 'MarkerSize', 5)
         title('Forget Rate (f)')
         ylim([-.1 1]);
         xlabel('Subject ID')
@@ -35,7 +35,7 @@ figure;
     subplot(1,2,1); hold on;
         plot(repmat(p_guess_0, N, 1), 'k--', 'LineWidth', 3);
         plot(all_p_guess_KT,'ro', 'LineWidth', 3, 'MarkerSize', 5);
-        plot(all_p_guess,'bo', 'LineWidth', 3, 'MarkerSize', 5)
+        plot(all_p_guess_KTAttn,'bo', 'LineWidth', 3, 'MarkerSize', 5)
         title('Guess Rate (g)')
         ylim([-.1 1.1]);
         xlabel('Subject ID')
@@ -45,7 +45,7 @@ figure;
     subplot(1,2,2); hold on;
         plot(repmat(p_slip_0, N, 1), 'k--', 'LineWidth', 3);
         plot(all_p_slip_KT,'ro', 'LineWidth', 3, 'MarkerSize', 5);
-        plot(all_p_slip,'bo', 'LineWidth', 3, 'MarkerSize', 5)
+        plot(all_p_slip_KTAttn,'bo', 'LineWidth', 3, 'MarkerSize', 5)
         title('Slip Rate (s)')
         ylim([-.1 1.1]);
         legend('Seed', 'KT', 'KT-Attn')

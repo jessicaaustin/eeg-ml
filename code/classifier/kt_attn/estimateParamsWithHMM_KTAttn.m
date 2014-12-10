@@ -60,10 +60,10 @@ D0 = [p_slip_a_0      1-p_slip_a_0
 
 N = length(subjectids);
 all_l0 = zeros(N,1);
-all_p_learn = zeros(N,1);
-all_p_forget = zeros(N,1);
-all_p_guess = zeros(N,1);
-all_p_slip = zeros(N,1);
+all_p_learn_KTAttn = zeros(N,1);
+all_p_forget_KTAttn = zeros(N,1);
+all_p_guess_KTAttn = zeros(N,1);
+all_p_slip_KTAttn = zeros(N,1);
 all_p_learn_a = zeros(N,1);
 all_p_dontlearn_a = zeros(N,1);
 all_p_guess_a = zeros(N,1);
@@ -81,10 +81,10 @@ for idx=1:N
     end
     
     all_l0(i) = l0;
-    all_p_learn(i) = p_learn;
-    all_p_forget(i) = p_forget;
-    all_p_guess(i) = p_guess;
-    all_p_slip(i) = p_slip;
+    all_p_learn_KTAttn(i) = p_learn;
+    all_p_forget_KTAttn(i) = p_forget;
+    all_p_guess_KTAttn(i) = p_guess;
+    all_p_slip_KTAttn(i) = p_slip;
     all_p_learn_a(i) = p_learn_a;
     all_p_dontlearn_a(i) = p_dontlearn_a;
     all_p_guess_a(i) = p_guess_a;
@@ -103,13 +103,13 @@ figure; hold on;
 figure; 
     subplot(1,2,1); hold on;
         plot(repmat(p_learn_0, N, 1), 'k:');
-        plot(all_p_learn,'ro')
+        plot(all_p_learn_KTAttn,'ro')
 %         errorbar(round(N/2), mean(all_p_learn), std(all_p_learn));
         title('p\_learn')
         ylim([0 1]);
     subplot(1,2,2); hold on;
         plot(repmat(p_forget_0, N, 1), 'k:');
-        plot(all_p_forget,'ro')
+        plot(all_p_forget_KTAttn,'ro')
 %         errorbar(round(N/2), mean(all_p_forget), std(all_p_forget));
         title('p\_forget')
         ylim([0 1]);
@@ -118,13 +118,13 @@ figure;
 figure;
     subplot(1,2,1); hold on;
         plot(repmat(p_guess_0, N, 1), 'k:');
-        plot(all_p_guess,'ro')
+        plot(all_p_guess_KTAttn,'ro')
 %         errorbar(round(N/2), mean(all_p_guess), std(all_p_guess));
         title('p\_guess')
         ylim([0 1]);
     subplot(1,2,2); hold on;
         plot(repmat(p_slip_0, N, 1), 'k:');
-        plot(all_p_slip,'ro')
+        plot(all_p_slip_KTAttn,'ro')
 %         errorbar(round(N/2), mean(all_p_slip), std(all_p_slip));
         title('p\_slip')
         ylim([0 1]);
