@@ -1,9 +1,9 @@
 clear;
 % close all;
 
-addpath('../../common');
-addpath('../../HMM_mat');
-addpath('../../HMM_mat_ext');
+addpath('../common');
+addpath('../HMM_mat');
+addpath('../HMM_mat_ext');
 
 load('subjects.mat');
 N = length(subjectids);

@@ -1,7 +1,7 @@
 
 clear;
 
-load('../../../data-lg/subjects.mat');
+load('../../data-lg/subjects.mat');
 
 subjectids = subjects.subjectid;
 
@@ -12,7 +12,7 @@ for sid=subjectids'
     filename = char(strcat('subjects/', sid, '_idx.mat'));
     
     try
-        rawdata = tdfread(char(strcat('../../../data-lg/userdata/', sid, '_aligned.xls')));
+        rawdata = tdfread(char(strcat('../../data-lg/userdata/', sid, '_aligned.xls')));
     catch err
         continue;
     end

@@ -8,7 +8,7 @@ for sid=subjectids'
     
     fprintf('%s -- ', char(sid));
     idx_filename = char(strcat('subjects/', sid, '_idx.mat'));
-    rawdata_filename = char(strcat('../../../data-lg/userdata/', sid, '_aligned.xls'));
+    rawdata_filename = char(strcat('../../data-lg/userdata/', sid, '_aligned.xls'));
     filename = char(strcat('subjects/', sid, '.mat'));
     
     try

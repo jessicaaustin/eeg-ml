@@ -1,4 +1,4 @@
-These scripts depend on aligned data in ../../../data-lg
+These scripts depend on aligned data in ../../data-lg
 
 Once you have aligned data, run these in order:
 1. findDataWithGoodEEG
